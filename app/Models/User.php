@@ -2,59 +2,53 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = ['name', 'email', 'password', 'role'];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
-    //A user can create many car posts
+    // A user has many car posts (existing feature)
     public function carPosts()
     {
         return $this->hasMany(CarPost::class);
     }
 
-    // A user has many likes
+    // A user has many likes (existing feature)
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    // E-commerce: user has many orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    // E-commerce: user has many cart items
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    // Check if this user is an admin
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }
